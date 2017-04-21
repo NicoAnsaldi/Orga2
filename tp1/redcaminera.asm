@@ -952,8 +952,8 @@ ciudadesMasLejanas:
 	sub rsp, 8
 
 	mov r15, rdi ;red
-	mov r14, [rsi] ;puntero a la primera ciudad
-	mov r13, [rdx] ;puntero a la segunda ciudad
+	lea r14, [rsi] ;puntero a la primera ciudad
+	lea r13, [rdx] ;puntero a la segunda ciudad
 
 	mov rdi, r15
 	call rutaMasLarga
