@@ -13,11 +13,11 @@ void casoG();
 
 int main() {
   remove(archivoCasoLista);
-  //casoL();
+  casoL();
   remove(archivoCasoRedChica);
   casoC();
   remove(archivoCasoRedGrande);
-  //casoG();
+  casoG();
   return 0;
 }
 
@@ -157,9 +157,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    fputs( "\nLineaqueSacar\n", pFile );
-    ciudadesMasLejanas(rc, &c1, &c2);
-    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    //ciudadesMasLejanas(rc, &c1, &c2);
+    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -189,9 +188,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    fputs( "\nLineaqueSacar\n", pFile );
-    ciudadesMasLejanas(rc, &c1, &c2);
-    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    //ciudadesMasLejanas(rc, &c1, &c2);
+    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -227,9 +225,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    fputs( "\nLineaqueSacar\n", pFile );
-    ciudadesMasLejanas(rc, &c1, &c2);
-    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    //ciudadesMasLejanas(rc, &c1, &c2);
+    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -433,7 +430,7 @@ void casoG() {
         rc_agregarRuta(rc1, text1, text2, rand()%10000 / 100 );
     }
     rc_imprimirTodo(rc1, pFile);
-    /*
+    
     for(int i=0;i<10;i++) {
         lista* ll = l_crear();
         for(int i=0;i<15;i++) {
@@ -446,7 +443,7 @@ void casoG() {
         rc_borrarTodo(rcc);
         l_borrarTodo(ll);
     }
-    */
+    
     rc_borrarTodo(rc1);
     
     fclose( pFile );

@@ -963,19 +963,25 @@ ciudadesMasLejanas:
 
 	mov rbx, [r12+ruta_ciudadA]
 	mov rdi, [rbx+ciudad_nombre]
-	mov r10, [rbx+ciudad_poblacion]
-	call str_copy
-	mov [r14+ciudad_nombre], rax
-	mov [r14+ciudad_poblacion], r10 
+	mov rsi, [rbx+ciudad_poblacion]
+	call c_crear
+	mov r14, rax
+	;mov r10, [rbx+ciudad_poblacion]
+	;call str_copy
+	;mov [r14+ciudad_nombre], rax
+	;mov [r14+ciudad_poblacion], r10 
 
 	mov rbx, [r12+ruta_ciudadB]
 	mov rdi, [rbx+ciudad_nombre]
-	mov r10, [rbx+ciudad_poblacion]
-	call str_copy
-	mov [r13+ciudad_nombre], rax
-	mov [r13+ciudad_poblacion], r10
-	mov r14, [r12+ruta_ciudadA]
-	mov r13, [r12+ruta_ciudadB]
+	mov rsi, [rbx+ciudad_poblacion]
+	call c_crear
+	mov r13, rax
+	;mov rbx, [r12+ruta_ciudadB]
+	;mov rdi, [rbx+ciudad_nombre]
+	;mov r10, [rbx+ciudad_poblacion]
+	;call str_copy
+	;mov [r13+ciudad_nombre], rax
+	;mov [r13+ciudad_poblacion], r10
 	
 	add rsp, 8
 	pop rbx

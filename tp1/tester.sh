@@ -25,11 +25,11 @@ echo "**Corriendo diferencias con la catedra"
 DIFFER="diff -d"
 ERRORDIFF=0
 
-#$DIFFER salida.caso.lista.txt Catedra.salida.caso.lista.txt > /dev/null
-#if [ $? -ne 0 ]; then
-#  echo "  **Discrepancia en el caso RED GRANDE: salida.caso.lista.txt vs Catedra.salida.caso.lista.txt"
-#  ERRORDIFF=1
-#fi
+$DIFFER salida.caso.lista.txt Catedra.salida.caso.lista.txt > /dev/null
+if [ $? -ne 0 ]; then
+  echo "  **Discrepancia en el caso RED GRANDE: salida.caso.lista.txt vs Catedra.salida.caso.lista.txt"
+  ERRORDIFF=1
+fi
 
 $DIFFER salida.caso.redchica.txt Catedra.salida.caso.redchica.txt > /dev/null
 if [ $? -ne 0 ]; then
@@ -37,11 +37,11 @@ if [ $? -ne 0 ]; then
   ERRORDIFF=1
 fi
 
-#$DIFFER salida.caso.redgrande.txt Catedra.salida.caso.redgrande.txt > /dev/null
-#if [ $? -ne 0 ]; then
-#  echo "  **Discrepancia en el caso RED GRANDE: salida.caso.redgrande.txt vs Catedra.salida.caso.redgrande.txt"
-#  ERRORDIFF=1
-#fi
+$DIFFER salida.caso.redgrande.txt Catedra.salida.caso.redgrande.txt > /dev/null
+if [ $? -ne 0 ]; then
+  echo "  **Discrepancia en el caso RED GRANDE: salida.caso.redgrande.txt vs Catedra.salida.caso.redgrande.txt"
+  ERRORDIFF=1
+fi
 
 echo " "
 if [ $ERRORDIFF -eq 0 ]; then
