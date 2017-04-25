@@ -127,7 +127,7 @@ l_agregarAtras:
 	mov [r12+lista_ult], rax
 	
 	cmp qword [r12+lista_pri], 0 ;Veo si el primero de la lista es NULL
-	je .listaVacia
+	je .listaVacia ;Si lo es defino al elem que acabo de agregar como el primero
 	jmp .final
 
 	.listaVacia:
@@ -315,12 +315,13 @@ c_cmp:
 	push r12
 	push r13
 
-	mov r12, rdi
-	mov r13, rsi
-	mov rdi, [r12+ciudad_nombre]
+	mov r12, rdi ;Me guardo la primera ciudad
+	mov r13, rsi ;Me gaurdo la segunda 
+	mov rdi, [r12+ciudad_nombre] 
 	mov rsi, [r13+ciudad_nombre]
-
+ 	;Paso los nombres a rdi y rsi para llamar a str_cmp
 	call str_cmp
+	
 	pop r13
 	pop r12
 	pop rbp
@@ -359,7 +360,7 @@ r_crear:
 
 	mov r12, rdi ;Me guardo el puntero a la primera ciudad
 	mov r13, rsi ;Me guardo el puntero a la segunda ciudad
-	mov r14, rdx ;Me guardo la distancia
+	;En xmm0 tengo la distancia
 
 	call c_cmp 
 	;Ahora tengo en eax cual de las ciudades tiene que ir primero
@@ -374,9 +375,9 @@ r_crear:
 		call malloc
 		cmp rax, 0
 		je .fin7
-		mov [rax+ruta_ciudadA], r12
+		mov [rax+ruta_ciudadA], r12 ;Aca asigno los valores para la ruta
 		mov [rax+ruta_ciudadB], r13
-		movsd [rax+ruta_distancia], xmm0
+		movsd [rax+ruta_distancia], xmm0 ;Uso el mov de double word en escala
 		jmp .fin7
 
 	.SegundaMasChica:
@@ -385,7 +386,7 @@ r_crear:
 		call malloc
 		cmp rax, 0
 		je .fin7
-		mov [rax+ruta_ciudadA], r13
+		mov [rax+ruta_ciudadA], r13 ;Aca hago lo mismo
 		mov [rax+ruta_ciudadB], r12
 		movsd [rax+ruta_distancia], xmm0
 		jmp .fin7
@@ -410,9 +411,9 @@ r_cmp:
 
 	mov rdi, [r12+ruta_ciudadA]
 	mov rsi, [r13+ruta_ciudadA]
-	;LLamo a str_cmp y divido en casos
+	;LLamo a c_cmp y divido en casos
 	call c_cmp
-
+	;Aca hago algo bastante similar a str_cmp
 	cmp eax, 0
 	je .PrueboLaSegundaCiudad
 	jl .SegundaMenor
@@ -430,7 +431,7 @@ r_cmp:
 		mov rdi, [r12+ruta_ciudadB]
 		mov rsi, [r13+ruta_ciudadB]
 		call c_cmp
-
+		;Hago lo mismo que arriba
 		cmp eax, 0
 		je .iguales
 		jl .SegundaMenor
@@ -449,7 +450,7 @@ r_cmp:
 
 global r_borrar
 r_borrar:
-	jmp free
+	jmp free ;Libero la estructura
 ret
 
 ; RED CAMINERA
@@ -463,20 +464,19 @@ rc_crear:
 	push r13
 	sub rsp, 8
 
-	mov r12, rdi ;Me guardo el nombre de la red
+	;Tengo el nombre en rdi llamo a str_copy para definirlo en memoria dinamica
 	call str_copy
-	mov r12, rax
+	mov r12, rax ;Me lo guardo
 	;Creo la listas vacias
 	call l_crear
 	mov r15, rax ;Me guardo la direccion a las listas vacias
 	call l_crear
 	mov r13, rax
 
+	;Ahora reservo el espacio para red
 	mov rdi, tam_red
 	call malloc
 	;Ahora asigno los valores en rax
-	cmp rax, 0
-	je .fin
 
 	mov qword [rax+red_ciudades], r15
 	mov qword [rax+red_rutas], r13
@@ -575,37 +575,40 @@ push rbp
 	mov ebx, [r11+lista_long] ;Lo uso para recorrer la lista
 	mov r12, [r11+lista_pri] ;Y me guardo el puntero al primer elemento
 
+	;Aca veo que la ruta no exista en la red
 	.ciclo:
 		cmp ebx, 0
 		je .Agrego ;Si recorri todo la ruta no existe entonces puedo agregarla
+		;Aca veo que lo que punta r12 sea o no igual con la primera ciudad pasada por parametros
 		mov rdi, r14
 		mov r10, [r12+nodo_dato]
 		mov r9, [r10+ruta_ciudadA]
 		mov rsi, [r9+ciudad_nombre]
 		call str_cmp
 		cmp eax, 0
-		je .compararSegunda
-		mov rdi, r14
+		je .compararSegunda ;Si son iguales voy a comparar la segunda ciudad de la ruta con la pasada por parametros
+		mov rdi, r14 ;Hago lo mismo pero para la ciudad B
 		mov r10, [r12+nodo_dato]
 		mov r9, [r10+ruta_ciudadB]
 		mov rsi, [r9+ciudad_nombre]
 		call str_cmp
 		cmp eax, 0
-		je .compararSegunda
+		je .compararSegunda ;Aca hago lo mismo
 		.vuelvo:
 		dec rbx
 		mov r12, [r12+nodo_siguiente]
 		jmp .ciclo
 
-	.compararSegunda:
+	;Esto lo hago porque como no se si me pasan las ciudades en orden lexicografico tengo que chequear todo
+	.compararSegunda: ;El punto de la funcion es que entre por el lado que entre siempre chequeo la ruta en general
 		mov rdi, r13
 		mov r10, [r12+nodo_dato]
 		mov r9, [r10+ruta_ciudadB]
 		mov rsi, [r9+ciudad_nombre]
-		call str_cmp
+		call str_cmp ;Comparo la segunda ciudad de la ruta que esta siendo apuntada por r12
 		cmp eax, 0
-		je .fin
-		mov rdi, r13
+		je .fin ;Si son iguales no la agrego porque la ruta ya existe
+		mov rdi, r13 ;Y hago lo mismo con la primera ciudad de la ruta
 		mov r10, [r12+nodo_dato]
 		mov r9, [r10+ruta_ciudadA]
 		mov rsi, [r9+ciudad_nombre]
@@ -615,13 +618,15 @@ push rbp
 		jmp .vuelvo
 
 	.Agrego:
+		;Una vez que se que puedo agregar veo donde agregarla, tengo que crear la ruta
 		mov r11, [r15+red_ciudades] ;Tengo la lista de ciudades
 		mov ebx, [r11+lista_long] ;Lo uso para recorrer la lista
 		mov r12, [r11+lista_pri] ;Y me guardo el puntero al primer elemento
 
+		;Aca veo si las ciudades existen en la red
 		.cicloBusca:
 			cmp ebx, 0
-			je .fin
+			je .fin ;Si no encuentro la ciudad salto hasta el final sin agregar la ruta
 			mov rdi, r14
 			mov r10, [r12+nodo_dato]
 			mov rsi, [r10+ciudad_nombre]
@@ -634,36 +639,37 @@ push rbp
 
 		.BuscoLaOtra:
 			mov r14, [r12+nodo_dato]
-			
 			mov r11, [r15+red_ciudades] ;Tengo la lista de ciudades
 			mov ebx, [r11+lista_long] ;Lo uso para recorrer la lista
 			mov r12, [r11+lista_pri] ;Y me guardo el puntero al primer elemento
-
-		.cicloBusca2:
-			cmp ebx, 0
-			je .fin
-			mov rdi, r13
-			mov r10, [r12+nodo_dato]
-			mov rsi, [r10+ciudad_nombre]
-			call str_cmp
-			cmp eax, 0
-			je .Listo
-			dec rbx
-			mov r12, [r12+nodo_siguiente]
-			jmp .cicloBusca2
+			;Es el mismo ciclo de antes pero con la segunda ciudad 
+			.cicloBusca2:
+				cmp ebx, 0
+				je .fin
+				mov rdi, r13
+				mov r10, [r12+nodo_dato]
+				mov rsi, [r10+ciudad_nombre]
+				call str_cmp
+				cmp eax, 0
+				je .Listo
+				dec rbx
+				mov r12, [r12+nodo_siguiente]
+				jmp .cicloBusca2
 
 		.Listo:
-		mov r13, [r12+nodo_dato]
-		mov rdi, r14
-		mov rsi, r13
-		call r_crear
-
-		lea rdi, [r15+red_rutas]
-		mov rsi, rax
-		mov rdx, r_borrar
-		mov rcx, r_cmp
-		call l_agregarOrdenado
-		jmp .fin
+			;Y si cumple todo lo anterior creo la ruta
+			mov r13, [r12+nodo_dato]
+			mov rdi, r14
+			mov rsi, r13
+			;Distancia en xmm0
+			call r_crear
+			;Ahora con lo creado lo agrego a la red
+			lea rdi, [r15+red_rutas]
+			mov rsi, rax
+			mov rdx, r_borrar
+			mov rcx, r_cmp
+			call l_agregarOrdenado
+			jmp .fin
 
 	.fin:
 	add rsp, 8
@@ -685,16 +691,16 @@ rc_borrarTodo:
 	mov r13, rdi ;Me guardo la red caminera
 
 	mov rdi, [r13+red_ciudades]
-	call l_borrarTodo
+	call l_borrarTodo ;Borro la lista de ciudades
 
 	mov rdi, [r13+red_rutas]
-	call l_borrarTodo
+	call l_borrarTodo ;Borro la lista de rutas
 
 	mov rdi, [r13+red_nombre]
-	call free
+	call free ;Borro el nombre de la red
 
 	mov rdi, r13
-	call free 
+	call free ;y despues libero la estructura
 
 	add rsp,8
 	pop r13
@@ -715,33 +721,31 @@ obtenerCiudad:
 	mov r15, rdi ;red caminera
 	mov r14, rsi ;nombre
 
-	mov r12, [r15+red_ciudades] 
-	mov ebx, [r12+lista_long]
-	mov r15, [r12+lista_pri]
+	mov r12, [r15+red_ciudades] ;Me guardo la lista de ciudades
+	mov ebx, [r12+lista_long] ;Me guardo la longitud de la lista para recorrerla
+	mov r15, [r12+lista_pri] ;Y tengo un puntero al primer elementos
 
 	.ciclo:
 		cmp ebx, 0
-		je .noExiste
-		mov r10, [r15+nodo_dato]
+		je .noExiste ;Si llego hasta aca implica que en la lista no estaba la ciudad
+		;Aca comparo por el nombre
+		mov r10, [r15+nodo_dato] 
 		mov rdi, r14
 		mov rsi, [r10+ciudad_nombre]
 		call str_cmp
 		cmp eax, 0
-		je .listo
+		je .listo ;Si es igual devuelvo eso, sino sigo
 		mov r15, [r15+nodo_siguiente]
 		dec rbx
 		jmp .ciclo
 
 	.listo:
-		mov r10, [r15+nodo_dato]
-		mov rdi, [r10+ciudad_nombre]
-		mov rsi, [r10+ciudad_poblacion]
-		call c_crear
+		mov rax, r15 ;Me guardo el puntero en rax y lo devuelvo
 		jmp .fin
 
 	.noExiste:
-		mov qword rax, 0
-
+ 		mov qword rax, 0 ;Sino devuelvo NULL
+ 
 	.fin:
 	pop rbx
 	pop r12
@@ -765,65 +769,63 @@ obtenerRuta:
 	mov r14, rsi ;primer nombre
 	mov r13, rdx ;segundo nombre
 
-	mov r12, [r15+red_rutas]
-	mov ebx, [r12+lista_long]
-	mov r15, [r12+lista_pri]
+	mov r12, [r15+red_rutas] ;Me guardo las rutas
+	mov ebx, [r12+lista_long] ;La longitud
+	mov r15, [r12+lista_pri] ;Y un puntero al primer elemento
 
 	mov rdi, r14
 	mov rsi, r13
-	call str_cmp
+	call str_cmp ;Aca veo que las ciudades no sean iguales, si lo son la ruta no existe
 	cmp eax, 0
 	je .noExiste
 
+	;Nota: esto ciclo es medio complicado porque no se si me pasan las ciudades en orden lexicografico
 	.ciclo:
 		cmp ebx, 0
-		je .noExiste
+		je .noExiste ;Veo que la ruta no existe
+		;Aca comparo el primer nombre pasado por paramentros contra lo que apunta r15
 		mov r10, [r15+nodo_dato]
 		mov rdi, r14
 		mov r9, [r10+ruta_ciudadA]
 		mov rsi, [r9+ciudad_nombre]
 		call str_cmp
 		cmp eax, 0
-		je .chequeo2b
-		mov r10, [r15+nodo_dato]
+		je .chequeo2b ;Si esta es igual veo la segunda pasada por parametro contra la ciudadB de la ruta 
+		mov r10, [r15+nodo_dato] ;Sino para la ciudadA de la ruta veo si es igual a la segunda pasada por parametro
 		mov rdi, r14
 		mov r9, [r10+ruta_ciudadB]
 		mov rsi, [r9+ciudad_nombre]
 		call str_cmp
 		cmp eax, 0
-		je .chequeo2a
+		je .chequeo2a ;Si es igual veo la segunda ciudad pasada por paramentros contra la CiudadA de la ruta
 		jne .avanzo
-		.chequeo2b:
-		mov r10, [r15+nodo_dato]
-		mov rdi, r13
-		mov r9, [r10+ruta_ciudadB]
-		mov rsi, [r9+ciudad_nombre]
-		call str_cmp
-		cmp eax, 0
-		je .listo
-		jne .avanzo
-		.chequeo2a:
-		mov r10, [r15+nodo_dato]
-		mov rdi, r13
-		mov r9, [r10+ruta_ciudadA]
-		mov rsi, [r9+ciudad_nombre]
-		call str_cmp
-		cmp eax, 0
-		je .listo
+		.chequeo2b: ;Aca chequeo la segunda ciudad pasada por parametro contra la ciudad B de la ruta 
+			mov r10, [r15+nodo_dato]
+			mov rdi, r13
+			mov r9, [r10+ruta_ciudadB]
+			mov rsi, [r9+ciudad_nombre]
+			call str_cmp
+			cmp eax, 0
+			je .listo
+			jne .avanzo
+		.chequeo2a: ;Lo mismo pero contra la ciudadA de la ruta
+			mov r10, [r15+nodo_dato]
+			mov rdi, r13
+			mov r9, [r10+ruta_ciudadA]
+			mov rsi, [r9+ciudad_nombre]
+			call str_cmp
+			cmp eax, 0
+			je .listo
 		.avanzo:
 		dec rbx
 		mov r15,[r15+nodo_siguiente]
 
 	.listo:
-		mov r10, [r15+nodo_dato]
-		mov rdi, [r10+ruta_ciudadA]
-		mov rsi, [r10+ruta_ciudadB]
-		movsd xmm0, [r10+ruta_distancia]
-		call r_crear
+		mov rax, r15 ;Si lo encuentro devuelvo ese puntero a la ciudad
 		jmp .fin
 
 	.noExiste:
-		mov qword rax, 0
+		mov qword rax, 0 ;Si no lo encontre devuelvo NULL
 		jmp .fin
 
 	.fin:
