@@ -847,35 +847,37 @@ ciudadMasPoblada:
 	push r13
 	sub rsp,8
 
-	mov r15, rdi ;red 
-	mov r11, [r15+red_ciudades]
-	mov r12, [r11+lista_pri]
-	mov ebx, [r11+lista_long]
-	mov r13, [r12+nodo_dato];maximo
-
-	cmp ebx, 0
+	mov r15, rdi ;Me guardo la red
+	mov r11, [r15+red_ciudades] ;Me guardo la lista de ciudades
+	mov r12, [r11+lista_pri] ;Me guardo el primero de la lista
+	mov ebx, [r11+lista_long] ;Me guardo la longitud de la lista
+	
+	cmp ebx, 0 ;Veo que la lista no sea vacia
 	je .listaVacia
+	
+	mov r13, [r12+nodo_dato];Lo uso para guardar el maximo
+
 	.ciclo:
 		cmp ebx, 0
-		je .fin
-		mov r9, [r12+nodo_dato]
-		mov r8, [r13+ciudad_poblacion]
+		je .fin 
+		mov r9, [r12+nodo_dato] ;Me guardo la ciudad que estoy viendo
+		mov r8, [r13+ciudad_poblacion] ;Aca asigno a 2 registros que comparo para ver cual es mas grande
 		mov r10, [r9+ciudad_poblacion]
 		cmp r8, r10
-		jl .actualizo
+		jl .actualizo ;Me quedo con el mas grande
 		.vuelvo:
-		mov r12, [r12+nodo_siguiente]
+		mov r12, [r12+nodo_siguiente] ;Aca avanzo por la lista y vuelvo a llamar al ciclo
 		dec rbx
 		jmp .ciclo
 
 	.actualizo:
-		mov r13, [r12+nodo_dato]
+		mov r13, [r12+nodo_dato] ;Voy actualizando el maximo y vuelvo al ciclo
 		jmp .vuelvo
 
 
 	.fin:
-	mov rax, r13
-
+	mov rax, r13 ;Devuelvo el maximo
+ 	;Notar que si la lista es vacia el valor en rax es fruta
 	.listaVacia:
 	add rsp,8
 	pop r13
@@ -895,16 +897,16 @@ rutaMasLarga:
 	push r14
 	sub rsp, 8
 
-	mov r15, rdi;red
+	mov r15, rdi; Me guardo la red, la lista de rutas y algunas cosas mas
 	mov r11, [r15+red_rutas]
 	mov r12, [r11+lista_pri]
 	mov ebx, [r11+lista_long]
+	
+
 	cmp ebx, 0 ;lista vacia
 	je .listaVacia
+	
 	mov r13, [r12+nodo_dato] ;res
-
-	cmp ebx, 0
-	je .listaVacia
 
 	.ciclo:
 		cmp ebx, 0
@@ -964,26 +966,10 @@ ciudadesMasLejanas:
 	mov r12, rax
 
 	mov rbx, [r12+ruta_ciudadA]
-	mov rdi, [rbx+ciudad_nombre]
-	mov rsi, [rbx+ciudad_poblacion]
-	call c_crear
-	mov r14, rax
-	;mov r10, [rbx+ciudad_poblacion]
-	;call str_copy
-	;mov [r14+ciudad_nombre], rax
-	;mov [r14+ciudad_poblacion], r10 
-
+	mov [r14], rbx
+	
 	mov rbx, [r12+ruta_ciudadB]
-	mov rdi, [rbx+ciudad_nombre]
-	mov rsi, [rbx+ciudad_poblacion]
-	call c_crear
-	mov r13, rax
-	;mov rbx, [r12+ruta_ciudadB]
-	;mov rdi, [rbx+ciudad_nombre]
-	;mov r10, [rbx+ciudad_poblacion]
-	;call str_copy
-	;mov [r13+ciudad_nombre], rax
-	;mov [r13+ciudad_poblacion], r10
+	mov [r13], rbx
 	
 	add rsp, 8
 	pop rbx

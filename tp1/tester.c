@@ -157,8 +157,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -188,8 +188,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -225,8 +225,8 @@ void casoC() {
     fprintf(pFile,"%s\n",c->nombre);
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
