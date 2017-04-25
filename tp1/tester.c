@@ -13,11 +13,11 @@ void casoG();
 
 int main() {
   remove(archivoCasoLista);
-  casoL();
+  //casoL();
   remove(archivoCasoRedChica);
-  //casoC();
+  casoC();
   remove(archivoCasoRedGrande);
-  casoG();
+  //casoG();
   return 0;
 }
 
@@ -146,7 +146,7 @@ void casoC() {
     rc_agregarRuta(rc, "sh345hs", "sarasas", 30.234);
     rc_imprimirTodo(rc, pFile);
     rc_borrarTodo(rc);
-    /*
+    
     rc = rc_crear("sarasa");
     rc_agregarCiudad(rc, "sarasas", 1000);
     rc_agregarCiudad(rc, "7nhewrs", 1003);
@@ -158,8 +158,8 @@ void casoC() {
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
     fputs( "\nLineaqueSacar\n", pFile );
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -190,8 +190,8 @@ void casoC() {
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
     fputs( "\nLineaqueSacar\n", pFile );
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -228,8 +228,8 @@ void casoC() {
     r = rutaMasLarga(rc);
     fprintf(pFile,"%f\n",r->distancia);
     fputs( "\nLineaqueSacar\n", pFile );
-    //ciudadesMasLejanas(rc, &c1, &c2);
-    //fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
+    ciudadesMasLejanas(rc, &c1, &c2);
+    fprintf(pFile,"%s %s\n",c1->nombre,c2->nombre);
     a = cantidadDeCaminos(rc, "sh345hs");
     fprintf(pFile,"%i\n",a);
     totald = totalDeDistancia(rc);
@@ -334,7 +334,7 @@ void casoC() {
     rc_borrarTodo(rcc);
     l_borrarTodo(ll);
     rc_borrarTodo(rc1);
-    */
+    
     fclose( pFile );
 }
 
@@ -353,7 +353,7 @@ void casoG() {
     ciudad* cMas;
     char text1[100];
     char text2[100];
-    /*
+    
     fputs( "Test\n", pFile );
     
     srand(70);
@@ -416,11 +416,13 @@ void casoG() {
         rc_borrarTodo(rc1);
         rc_borrarTodo(rc2);
     }
-    */
+    
+    
     fputs( "\nTest caso subred\n", pFile );
     
     srand(10);
     rc1 = rc_crear("nombreRAN!");
+    
     for(int i=0;i<100;i++) {
         sprintf(text1, "name%i", i);
         rc_agregarCiudad(rc1, text1, rand()%1000 );
@@ -431,6 +433,7 @@ void casoG() {
         rc_agregarRuta(rc1, text1, text2, rand()%10000 / 100 );
     }
     rc_imprimirTodo(rc1, pFile);
+    /*
     for(int i=0;i<10;i++) {
         lista* ll = l_crear();
         for(int i=0;i<15;i++) {
@@ -443,6 +446,7 @@ void casoG() {
         rc_borrarTodo(rcc);
         l_borrarTodo(ll);
     }
+    */
     rc_borrarTodo(rc1);
     
     fclose( pFile );

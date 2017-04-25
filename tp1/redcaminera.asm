@@ -769,6 +769,12 @@ obtenerRuta:
 	mov ebx, [r12+lista_long]
 	mov r15, [r12+lista_pri]
 
+	mov rdi, r14
+	mov rsi, r13
+	call str_cmp
+	cmp eax, 0
+	je .noExiste
+
 	.ciclo:
 		cmp ebx, 0
 		je .noExiste
@@ -866,9 +872,8 @@ ciudadMasPoblada:
 
 
 	.fin:
-	mov rdi, [r13+ciudad_nombre]
-	mov rsi, [r13+ciudad_poblacion]
-	call c_crear
+	mov rax, r13
+
 	.listaVacia:
 	add rsp,8
 	pop r13
@@ -926,10 +931,7 @@ rutaMasLarga:
 		jmp .vuelvo
 
 	.fin:
-	mov rdi, [r13+ruta_ciudadA]
-	mov rsi, [r13+ruta_ciudadB]
-	movsd xmm0, [r13+ruta_distancia]
-	call r_crear
+	mov rax, r13
 	.listaVacia:
 	add rsp, 8
 	pop r14
@@ -974,9 +976,6 @@ ciudadesMasLejanas:
 	mov [r13+ciudad_poblacion], r10
 	mov r14, [r12+ruta_ciudadA]
 	mov r13, [r12+ruta_ciudadB]
-
-	mov rdi, r12
-	call r_borrar
 	
 	add rsp, 8
 	pop rbx
@@ -1166,9 +1165,7 @@ ciudadMasComunicada:
 		jmp .vuelvo
 
 	.fin:
-	mov rdi, [r13+ciudad_nombre]
-	mov rsi, [r13+ciudad_poblacion]
-	call c_crear
+	mov rax, r13
 	.listaVacia:
 	add rsp,8
 	pop r14

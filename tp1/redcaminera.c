@@ -83,9 +83,14 @@ redCaminera* rc_combinarRedes(char* nombre, redCaminera* rc1, redCaminera* rc2) 
 
 redCaminera* rc_obtenerSubRed(char* nombre, redCaminera* rc, lista* ciudades) {
 	redCaminera* r = rc_crear(nombre);
-
 	nodo* iterLista = ciudades->primero;
+	int esta[ciudades->longitud];
 	uint32_t i = 0;
+	while(i<ciudades->longitud){
+		esta[i] = 0;
+		i++;
+	}
+	i = 0;
 	while(i < ciudades->longitud){
 		uint32_t j = 0;
 		nodo* iterRC = ((lista*) rc->ciudades)->primero;
@@ -93,28 +98,37 @@ redCaminera* rc_obtenerSubRed(char* nombre, redCaminera* rc, lista* ciudades) {
 			j++;
 			iterRC = iterRC->siguiente;
 		}
-		if(j == ((lista*) rc->ciudades)->longitud){
+		if(j < ((lista*) rc->ciudades)->longitud){
 			rc_agregarCiudad(r, ((ciudad*)iterLista->dato)->nombre, ((ciudad*)iterLista->dato)->poblacion);
+			esta[i] = 1;
 		}
 		i++;
 		iterLista = iterLista->siguiente;
 	}
-	nodo* iterListaaux = ciudades->primero;
+	
+	iterLista = ciudades->primero;
 	i = 0;
 	while(i < ciudades->longitud){
 		uint32_t j = 0;
-		iterLista = ciudades->primero;
+		nodo* iterListaaux = ciudades->primero;
 		while(j < ciudades->longitud){
-			ruta* rAux = obtenerRuta(rc, ((ciudad*) iterLista->dato)->nombre , (((ciudad*) iterLista->dato)->nombre));
-			if( rAux != 0){
-				rc_agregarRuta(r, ((ciudad*) iterLista->dato)->nombre , (((ciudad*) iterLista->dato)->nombre), rAux->distancia);
+			if((esta[i] == 1) && (esta[j]) == 1){
+				ruta* rAux = obtenerRuta(rc, ((ciudad*)iterLista->dato)->nombre, ((ciudad*)iterListaaux->dato)->nombre);
+				if(rAux != 0){
+					rc_agregarRuta(r, ((ciudad*)iterLista->dato)->nombre, ((ciudad*)iterListaaux->dato)->nombre, rAux->distancia);
+				}
+				ruta* rAux2 = obtenerRuta(rc, ((ciudad*)iterListaaux->dato)->nombre, ((ciudad*)iterLista->dato)->nombre);
+				if(rAux2 != 0){
+					rc_agregarRuta(r, ((ciudad*)iterListaaux->dato)->nombre, ((ciudad*)iterLista->dato)->nombre, rAux->distancia);
+				}
+				r_borrar(rAux2);
+				r_borrar(rAux);
 			}
 			j++;
-			iterLista = iterLista ->siguiente;
-			r_borrar(rAux);
+			iterListaaux = iterListaaux->siguiente;
 		}
 		i++;
-		iterListaaux = iterListaaux->siguiente;
+		iterLista = iterLista->siguiente;
 	}
 	return r;
 }
