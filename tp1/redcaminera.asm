@@ -898,12 +898,13 @@ rutaMasLarga:
 	sub rsp, 8
 
 	mov r15, rdi; Me guardo la red, la lista de rutas y algunas cosas mas
-	mov r11, [r15+red_rutas]
+	;Igual que siempre me guardo la lista de rutas, la longitud y el puntero al primero
+	mov r11, [r15+red_rutas] 
 	mov r12, [r11+lista_pri]
 	mov ebx, [r11+lista_long]
 	
 
-	cmp ebx, 0 ;lista vacia
+	cmp ebx, 0 ;lista vacia, esto lo hago por si no puedo tener un maximo hasta el momento
 	je .listaVacia
 	
 	mov r13, [r12+nodo_dato] ;res
@@ -911,14 +912,15 @@ rutaMasLarga:
 	.ciclo:
 		cmp ebx, 0
 		je .fin
+		;Aca comparo las distancias de las rutas
 		mov r14, [r12+nodo_dato]
 		movsd xmm0, [r13+ruta_distancia]
 		movsd xmm1, [r14+ruta_distancia]
-		ucomisd xmm0, xmm1
+		ucomisd xmm0, xmm1 ;Me recomendaron que usara esta instruccion para la comparacion de los xmm
 		jb .actualizo
-		je .veoMasChica
+		je .veoMasChica ;Si son iguales veo cual es la mas chica en cuanto a sus ciudades
 		.vuelvo:
-		dec rbx
+		dec rbx ;Modifico las variables para volver a entrar al loop
 		mov r12, [r12+nodo_siguiente]
 		jmp .ciclo
 
@@ -931,7 +933,7 @@ rutaMasLarga:
 		mov rsi, [r12+nodo_dato]
 		call r_cmp
 		cmp eax, 0
-		jl .actualizo
+		jl .actualizo ;Solo actualizo si el segundo parametro es mas chico (b<a = -1)
 		jmp .vuelvo
 
 	.fin:
@@ -958,14 +960,14 @@ ciudadesMasLejanas:
 	sub rsp, 8
 
 	mov r15, rdi ;red
-	lea r14, [rsi] ;puntero a la primera ciudad
-	lea r13, [rdx] ;puntero a la segunda ciudad
+	lea r14, [rsi] ;puntero a puntero la primera ciudad
+	lea r13, [rdx] ;puntero a puntero la segunda ciudad
 
-	mov rdi, r15
-	call rutaMasLarga
+	mov rdi, r15 
+	call rutaMasLarga ;Llamo a rutaMasLarga que me devuelve un puntero a lo pedido
 	mov r12, rax
 
-	mov rbx, [r12+ruta_ciudadA]
+	mov rbx, [r12+ruta_ciudadA] ;Actualizo las ciudades
 	mov [r14], rbx
 	
 	mov rbx, [r12+ruta_ciudadB]
@@ -993,8 +995,9 @@ totalDeDistancia:
 	mov r11, [r15+red_rutas]
 	mov r12, [r11+lista_pri]
 	mov ebx, [r11+lista_long]
-	pxor xmm0, xmm0 ;res
+	pxor xmm0, xmm0 ;res, lo seteo en 0 para ir acumulando el resultado
 
+	;Me voy moviendo por la lista y sumando las distancias, guardandolas en xmm0
 	.ciclo:
 		cmp ebx, 0
 		je .fin
@@ -1023,6 +1026,7 @@ totalDePoblacion:
 	push r13
 	push rbx
 
+	;Igual que el anterior pero sumando enteros en vez de doubles
 	mov r15, rdi;red
 	mov r11, [r15+red_ciudades]
 	mov r12, [r11+lista_pri]
@@ -1061,7 +1065,7 @@ cantidadDeCaminos:
 
 
 	mov r15, rdi ;red
-	mov r14, rsi ;nombre
+	mov r14, rsi ;nombre de la ciudad
 
 	mov r11, [r15+red_rutas]
 	mov r12, [r11+lista_pri]
@@ -1075,10 +1079,10 @@ cantidadDeCaminos:
 		mov rdi, r14
 		mov r9, [r10+ruta_ciudadA]
 		mov rsi, [r9+ciudad_nombre]
-		call str_cmp
+		call str_cmp ;Comparo la primera ciudad de la ruta contra el nombre pasado por parametro
 		cmp eax, 0
-		jne .pruebo2
-		inc r13
+		jne .pruebo2 ;Si no son iguales comparo la segunda ciudad de la ruta
+		inc r13 ;Si son iguales, incremento r13 y avanzo
 		jmp .avanzo
 		.pruebo2:
 		mov r10, [r12+nodo_dato]
@@ -1086,7 +1090,7 @@ cantidadDeCaminos:
 		mov r9, [r10+ruta_ciudadB]
 		mov rsi, [r9+ciudad_nombre]
 		call str_cmp
-		cmp eax, 0
+		cmp eax, 0 ;Lo mismo que lo de arriba solo que si no son iguales avanzo sin incrementar r13
 		jne .avanzo
 		inc r13
 		.avanzo:
@@ -1117,31 +1121,33 @@ ciudadMasComunicada:
 	push r14
 	sub rsp,8
 
+	;Igual que en las mayoria de funciones, me quedo con la lista de ciudades, longitud y primero
 	mov r15, rdi ;red
 	mov r11, [r15+red_ciudades]
 	mov r12, [r11+lista_pri]
 	mov ebx, [r11+lista_long]
-	mov r13,[r12+nodo_dato] ;res
-
-	cmp ebx, 0
+	
+	cmp ebx, 0 ;Aca veo si por lo menos tengo un elemento que sea el maximo
 	je .listaVacia
+
+	mov r13,[r12+nodo_dato] ;res
 
 	.ciclo:
 		cmp ebx, 0
 		je .fin
 		mov rdi, r15
 		mov rsi, [r13+ciudad_nombre]
-		call cantidadDeCaminos
-		mov r14, rax
+		call cantidadDeCaminos ;llamo a cantidad de caminos para la ciudad que tengo el maximo temporal
+		mov r14, rax ;Me lo guardo en r14
 		mov r9, [r12+nodo_dato]
 		mov rdi, r15
 		mov rsi, [r9+ciudad_nombre]
-		call cantidadDeCaminos
+		call cantidadDeCaminos ;Lo mismo para la ciudad que estoy recorriendo
 		cmp r14, rax
-		jl .actualizo
-		je .veoMasChica
+		jl .actualizo ;Luego los comparo y solo actualizo si la que tengo como maximo es mas chico
+		je .veoMasChica ;Si son iguales veo cual es la menor en terminos lexicograficos
 		.vuelvo:
-		dec rbx
+		dec rbx ;Actualizo los valores para seguir recorriendo la lista
 		mov r12, [r12+nodo_siguiente]
 		jmp .ciclo
 
