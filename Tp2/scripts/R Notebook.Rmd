@@ -1,0 +1,94 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup}
+library(plyr)
+library(dplyr)
+library(ggplot2)
+setwd("../tests/data")
+```
+
+
+```{r load datasets}
+fourCombine = as.data.frame(read.csv("data_fourCombine.csv"))
+linearZoom = as.data.frame(read.csv("data_linearZoom.csv"))
+maxCloser = as.data.frame(read.csv("data_maxCloser.csv"))
+rgb2yuv = as.data.frame(read.csv("data_rgb2yuv.csv"))
+yuv2rgb = as.data.frame(read.csv("data_yuv2rgb.csv"))
+
+colnames(fourCombine) = c("Tipo", "Tamaño", "Clocks")
+colnames(linearZoom) = c("Tipo", "Tamaño", "Clocks")
+colnames(rgb2yuv) = c("Tipo", "Tamaño", "Clocks")
+colnames(yuv2rgb) = c("Tipo", "Tamaño", "Clocks")
+colnames(maxCloser) = c("Tipo", "Tamaño", "Parametro", "Clocks")
+
+fourCombine = fourCombine %>% mutate(Tipo = replace(Tipo, Tipo==0, "C"))
+fourCombine = fourCombine %>% mutate(Tipo = replace(Tipo, Tipo==1, "Tipo"))
+
+linearZoom = linearZoom %>% mutate(Tipo = replace(Tipo, Tipo==0, "C"))
+linearZoom = linearZoom %>% mutate(Tipo = replace(Tipo, Tipo==1, "Tipo"))
+
+maxCloser = maxCloser %>% mutate(Tipo = replace(Tipo, Tipo==0, "C"))
+maxCloser = maxCloser %>% mutate(Tipo = replace(Tipo, Tipo==1, "Tipo"))
+
+rgb2yuv = rgb2yuv %>% mutate(Tipo = replace(Tipo, Tipo==0, "C"))
+rgb2yuv = rgb2yuv %>% mutate(Tipo = replace(Tipo, Tipo==1, "Tipo"))
+
+yuv2rgb = yuv2rgb %>% mutate(Tipo = replace(Tipo, Tipo==0, "C"))
+yuv2rgb = yuv2rgb %>% mutate(Tipo = replace(Tipo, Tipo==1, "Tipo"))
+```
+
+```{r proccess datasets}
+fourCombine_summary = fourCombine %>% group_by(Tipo, Tamaño, add = TRUE) %>% summarise(avg = mean(Clocks), sd = sd(Clocks))
+
+linearZoom_summary = linearZoom %>% group_by(Tipo, Tamaño, add = TRUE) %>% summarise(avg = mean(Clocks), sd = sd(Clocks))
+
+rgb2yuv_summary = rgb2yuv %>% group_by(Tipo, Tamaño, add = TRUE) %>% summarise(avg = mean(Clocks), sd = sd(Clocks))
+
+yuv2rgb_summary = yuv2rgb %>% group_by(Tipo, Tamaño, add = TRUE) %>% summarise(avg = mean(Clocks), sd = sd(Clocks))
+
+maxCloser_summary = maxCloser %>% group_by(Tipo, Tamaño, Parametro, add = TRUE) %>% summarise(avg = mean(Clocks), sd = sd(Clocks))
+maxCloser_summary$Parametro = as.factor(maxCloser_summary$Parametro)
+```
+
+```{r fourCombine graphics}
+plot <- fourCombine_summary %>% filter() %>% ggplot(aes(x = Tamaño^2, y = avg, colour = Tipo))
+plot <- plot + geom_line() + 
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), colour="black", alpha = .3)
+plot <- plot + labs(y = "Clocks promedio", x = "Cantidad de pixeles")
+plot
+```
+
+```{r linearZoom graph}
+plot <- linearZoom_summary %>% filter() %>% ggplot(aes(x = Tamaño^2, y = avg, colour = Tipo))
+plot <- plot + geom_line() + 
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), colour="black", alpha = .3)
+plot <- plot + labs(y = "Clocks promedio", x = "Cantidad de pixeles")
+plot
+
+```
+
+```{r maxCloser graph}
+plot <- maxCloser_summary %>% filter(Parametro == "0.5") %>% ggplot(aes(x = Tamaño^2, y = avg, colour = Tipo))
+plot <- plot + geom_line() + 
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), colour="black", alpha = .3)
+plot <- plot + labs(y = "Clocks promedio", x = "Cantidad de pixeles")
+plot
+```
+
+```{r rgb2yuv graph}
+plot <- rgb2yuv_summary %>% filter() %>% ggplot(aes(x = Tamaño^2, y = avg, colour = Tipo))
+plot <- plot + geom_line() + 
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), colour="black", alpha = .3) 
+plot <- plot + labs(y = "Clocks promedio", x = "Cantidad de pixeles")
+plot
+```
+```{r yuv2rgb}
+plot <- yuv2rgb_summary %>% filter() %>% ggplot(aes(x = Tamaño^2, y = avg, colour = Tipo))
+plot <- plot + geom_line() + 
+  geom_errorbar(aes(ymin=avg-sd, ymax=avg+sd), colour="black", alpha = .3) 
+plot <- plot + labs(y = "Clocks promedio", x = "Cantidad de pixeles")
+plot
+```
